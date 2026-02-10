@@ -3308,7 +3308,73 @@ do
 						TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
 						{ BackgroundTransparency = 1, Size = UDim2New(0, -2, 0, -2) }
 					)
-				Items["Text"].Instance.Text = Text
+				end
+			end
+
+			return Toggle
+		end
+
+		Library.Sections.Label = function(self, Data)
+			Data = Data or {}
+
+			local Label = {
+				Window = self.Window,
+				Page = self.Page,
+				Section = self,
+
+				Name = Data.Name or Data.name or "Label",
+				Flag = Data.Flag or Data.flag or Library:NextFlag(),
+				Text = Data.Text or Data.text or "",
+				Callback = Data.Callback or Data.callback or function() end,
+
+				Value = "",
+			}
+
+			local Items = {}
+			do
+				Items["Label"] = Instances:Create("TextLabel", {
+					Parent = Label.Section.Items["Content"].Instance,
+					Name = "\0",
+					FontFace = Library.Font,
+					TextColor3 = FromRGB(255, 255, 255),
+					BorderColor3 = FromRGB(0, 0, 0),
+					Text = Label.Text,
+					Size = UDim2New(1, 0, 0, 15),
+					BackgroundTransparency = 1,
+					BorderSizePixel = 0,
+					AutomaticSize = Enum.AutomaticSize.X,
+					TextSize = 14,
+					BackgroundColor3 = FromRGB(255, 255, 255),
+				})
+				Items["Label"]:AddToTheme({ TextColor3 = "Text" })
+
+				Items["SubElements"] = Instances:Create("Frame", {
+					Parent = Items["Label"].Instance,
+					Name = "\0",
+					BorderColor3 = FromRGB(0, 0, 0),
+					AnchorPoint = Vector2New(1, 0),
+					BorderSizePixel = 0,
+					BackgroundTransparency = 1,
+					Position = UDim2New(1, 0, 0, 0),
+					Size = UDim2New(0, 0, 1, 0),
+					ZIndex = 2,
+					AutomaticSize = Enum.AutomaticSize.X,
+					BackgroundColor3 = FromRGB(255, 255, 255),
+				})
+
+				Instances:Create("UIListLayout", {
+					Parent = Items["SubElements"].Instance,
+					Name = "\0",
+					VerticalAlignment = Enum.VerticalAlignment.Center,
+					FillDirection = Enum.FillDirection.Horizontal,
+					HorizontalAlignment = Enum.HorizontalAlignment.Right,
+					Padding = UDimNew(0, 8),
+					SortOrder = Enum.SortOrder.LayoutOrder,
+				})
+			end
+
+			function Label:Get()
+				return Label.Value
 			end
 
 			function Label:SetVisibility(Bool)
