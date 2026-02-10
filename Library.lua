@@ -989,6 +989,825 @@ do
 		return FromHSV(Hue, Saturation, Value * Increment)
 	end
 
+	Library.CreateColorpicker = function(self, Data)
+		local Colorpicker = {
+			Hue = 0,
+			Saturation = 0,
+			Value = 0,
+
+			Alpha = 0,
+
+			IsOpen = false,
+			IsOpen2 = false,
+
+			Color = FromRGB(0, 0, 0),
+			HexValue = "000000",
+
+			Flag = Data.Flag,
+		}
+
+		local Items = {}
+		do
+			Items["ColorpickerButton"] = Instances:Create("TextButton", {
+				Parent = Data.Parent.Instance,
+				Name = "\0",
+				FontFace = Library.Font,
+				TextColor3 = FromRGB(0, 0, 0),
+				BorderColor3 = FromRGB(0, 0, 0),
+				Text = "",
+				AutoButtonColor = false,
+				Size = UDim2New(0, 15, 0, 15),
+				BorderSizePixel = 0,
+				TextSize = 14,
+				BackgroundColor3 = FromRGB(140, 255, 213),
+			})
+
+			Instances:Create("UIStroke", {
+				Parent = Items["ColorpickerButton"].Instance,
+				Name = "\0",
+				Color = FromRGB(46, 52, 61),
+				LineJoinMode = Enum.LineJoinMode.Miter,
+				ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+			}):AddToTheme({ Color = "Border" })
+
+			Instances:Create("UIGradient", {
+				Parent = Items["ColorpickerButton"].Instance,
+				Name = "\0",
+				Rotation = 90,
+				Color = RGBSequence({
+					RGBSequenceKeypoint(0, FromRGB(255, 255, 255)),
+					RGBSequenceKeypoint(1, FromRGB(152, 152, 152)),
+				}),
+			})
+
+			Items["ColorpickerWindow"] = Instances:Create("Frame", {
+				Parent = Library.UnusedHolder.Instance,
+				Name = "\0",
+				Visible = false,
+				Position = UDim2New(0, 1032, 0, 123),
+				BorderColor3 = FromRGB(0, 34, 37),
+				Size = UDim2New(0, 232, 0, 265),
+				BorderSizePixel = 2,
+				BackgroundColor3 = FromRGB(17, 21, 27),
+			})
+
+			Items["Glow"] = Instances:Create("ImageLabel", {
+				Parent = Items["ColorpickerWindow"].Instance,
+				Name = "\0",
+				ImageColor3 = FromRGB(94, 213, 213),
+				ScaleType = Enum.ScaleType.Slice,
+				ImageTransparency = 0.699999988079071,
+				BorderColor3 = FromRGB(0, 0, 0),
+				BackgroundColor3 = FromRGB(255, 255, 255),
+				Size = UDim2New(1, 25, 1, 25),
+				AnchorPoint = Vector2New(0.5, 0.5),
+				Image = "http://www.roblox.com/asset/?id=18245826428",
+				BackgroundTransparency = 1,
+				Position = UDim2New(0.5, 0, 0.5, 0),
+				ZIndex = -1,
+				BorderSizePixel = 0,
+				SliceCenter = RectNew(Vector2New(21, 21), Vector2New(79, 79)),
+			})
+			Items["Glow"]:AddToTheme({ ImageColor3 = "Accent" })
+
+			Instances:Create("UIGradient", {
+				Parent = Items["Glow"].Instance,
+				Name = "\0",
+				Rotation = 90,
+				Transparency = NumSequence({ NumSequenceKeypoint(0, 0), NumSequenceKeypoint(1, 1) }),
+			})
+
+			Instances:Create("UIStroke", {
+				Parent = Items["ColorpickerWindow"].Instance,
+				Name = "\0",
+				Color = FromRGB(94, 213, 213),
+				LineJoinMode = Enum.LineJoinMode.Miter,
+			}):AddToTheme({ Color = "Accent" })
+
+			Items["Alpha"] = Instances:Create("TextButton", {
+				Parent = Items["ColorpickerWindow"].Instance,
+				Name = "\0",
+				FontFace = Library.Font,
+				TextColor3 = FromRGB(0, 0, 0),
+				BorderColor3 = FromRGB(0, 0, 0),
+				Text = "",
+				AutoButtonColor = false,
+				AnchorPoint = Vector2New(0, 1),
+				BorderSizePixel = 0,
+				Position = UDim2New(0, 8, 1, -35),
+				Size = UDim2New(1, -16, 0, 10),
+				ZIndex = 2,
+				TextSize = 14,
+				BackgroundColor3 = FromRGB(140, 255, 213),
+			})
+
+			Items["Checkers"] = Instances:Create("ImageLabel", {
+				Parent = Items["Alpha"].Instance,
+				Name = "\0",
+				ScaleType = Enum.ScaleType.Tile,
+				BorderColor3 = FromRGB(0, 0, 0),
+				TileSize = UDim2New(0, 6, 0, 6),
+				Image = "http://www.roblox.com/asset/?id=18274452449",
+				BackgroundTransparency = 1,
+				Size = UDim2New(1, 0, 1, 0),
+				ZIndex = 2,
+				BorderSizePixel = 0,
+				BackgroundColor3 = FromRGB(255, 255, 255),
+			})
+
+			Instances:Create("UIGradient", {
+				Parent = Items["Checkers"].Instance,
+				Name = "\0",
+				Transparency = NumSequence({
+					NumSequenceKeypoint(0, 1),
+					NumSequenceKeypoint(0.37, 0.5),
+					NumSequenceKeypoint(1, 0),
+				}),
+			})
+
+			Items["AlphaDragger"] = Instances:Create("Frame", {
+				Parent = Items["Alpha"].Instance,
+				Name = "\0",
+				Size = UDim2New(0, 2, 1, 0),
+				Position = UDim2New(0, 8, 0, 0),
+				BorderColor3 = FromRGB(0, 0, 0),
+				ZIndex = 2,
+				BorderSizePixel = 0,
+				BackgroundColor3 = FromRGB(255, 255, 255),
+			})
+
+			Instances:Create("UIStroke", {
+				Parent = Items["AlphaDragger"].Instance,
+				Name = "\0",
+				Color = FromRGB(46, 52, 61),
+				LineJoinMode = Enum.LineJoinMode.Miter,
+				ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+			}):AddToTheme({ Color = "Border" })
+
+			Items["Hue"] = Instances:Create("TextButton", {
+				Parent = Items["ColorpickerWindow"].Instance,
+				Name = "\0",
+				FontFace = Library.Font,
+				TextColor3 = FromRGB(0, 0, 0),
+				BorderColor3 = FromRGB(0, 0, 0),
+				Text = "",
+				AutoButtonColor = false,
+				AnchorPoint = Vector2New(1, 0),
+				BorderSizePixel = 0,
+				Position = UDim2New(1, -7, 0, 8),
+				Size = UDim2New(0, 10, 1, -59),
+				ZIndex = 2,
+				TextSize = 14,
+				BackgroundColor3 = FromRGB(255, 255, 255),
+			})
+
+			Items["HueInline"] = Instances:Create("TextButton", {
+				Parent = Items["Hue"].Instance,
+				Name = "\0",
+				FontFace = Library.Font,
+				TextColor3 = FromRGB(0, 0, 0),
+				BorderColor3 = FromRGB(0, 0, 0),
+				Text = "",
+				AutoButtonColor = false,
+				BorderSizePixel = 0,
+				Size = UDim2New(1, 0, 1, 0),
+				ZIndex = 2,
+				TextSize = 14,
+				BackgroundColor3 = FromRGB(255, 255, 255),
+			})
+
+			Instances:Create("UIGradient", {
+				Parent = Items["HueInline"].Instance,
+				Name = "\0",
+				Rotation = 90,
+				Color = RGBSequence({
+					RGBSequenceKeypoint(0, FromRGB(255, 0, 0)),
+					RGBSequenceKeypoint(0.17, FromRGB(255, 255, 0)),
+					RGBSequenceKeypoint(0.33, FromRGB(0, 255, 0)),
+					RGBSequenceKeypoint(0.5, FromRGB(0, 255, 255)),
+					RGBSequenceKeypoint(0.67, FromRGB(0, 0, 255)),
+					RGBSequenceKeypoint(0.83, FromRGB(255, 0, 255)),
+					RGBSequenceKeypoint(1, FromRGB(255, 0, 0)),
+				}),
+			})
+
+			Instances:Create("UIStroke", {
+				Parent = Items["Hue"].Instance,
+				Name = "\0",
+				Color = FromRGB(46, 52, 61),
+				LineJoinMode = Enum.LineJoinMode.Miter,
+				ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+			}):AddToTheme({ Color = "Border" })
+
+			Items["HueDragger"] = Instances:Create("Frame", {
+				Parent = Items["Hue"].Instance,
+				Name = "\0",
+				BorderColor3 = FromRGB(0, 0, 0),
+				BackgroundTransparency = -0.009999999776482582,
+				Position = UDim2New(0, 0, 0, 8),
+				Size = UDim2New(1, 0, 0, 2),
+				ZIndex = 3,
+				BorderSizePixel = 0,
+				BackgroundColor3 = FromRGB(255, 255, 255),
+			})
+
+			Instances:Create("UIStroke", {
+				Parent = Items["HueDragger"].Instance,
+				Name = "\0",
+				Color = FromRGB(46, 52, 61),
+				LineJoinMode = Enum.LineJoinMode.Miter,
+				ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+			}):AddToTheme({ Color = "Border" })
+
+			Items["Palette"] = Instances:Create("TextButton", {
+				Parent = Items["ColorpickerWindow"].Instance,
+				Name = "\0",
+				FontFace = Library.Font,
+				TextColor3 = FromRGB(0, 0, 0),
+				BorderColor3 = FromRGB(0, 0, 0),
+				Text = "",
+				AutoButtonColor = false,
+				BorderSizePixel = 0,
+				Position = UDim2New(0, 8, 0, 8),
+				Size = UDim2New(1, -31, 1, -59),
+				ZIndex = 2,
+				TextSize = 14,
+				BackgroundColor3 = FromRGB(140, 255, 213),
+			})
+
+			Instances:Create("UIStroke", {
+				Parent = Items["Palette"].Instance,
+				Name = "\0",
+				Color = FromRGB(46, 52, 61),
+				LineJoinMode = Enum.LineJoinMode.Miter,
+				ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+			}):AddToTheme({ Color = "Border" })
+
+			Items["Saturation"] = Instances:Create("Frame", {
+				Parent = Items["Palette"].Instance,
+				Name = "\0",
+				Size = UDim2New(1, 0, 1, 0),
+				BorderColor3 = FromRGB(0, 0, 0),
+				ZIndex = 2,
+				BorderSizePixel = 0,
+				BackgroundColor3 = FromRGB(255, 255, 255),
+			})
+
+			Instances:Create("UIGradient", {
+				Parent = Items["Saturation"].Instance,
+				Name = "\0",
+				Transparency = NumSequence({ NumSequenceKeypoint(0, 1), NumSequenceKeypoint(1, 0) }),
+			})
+
+			Items["Value"] = Instances:Create("Frame", {
+				Parent = Items["Palette"].Instance,
+				Name = "\0",
+				Size = UDim2New(1, 0, 1, 0),
+				BorderColor3 = FromRGB(0, 0, 0),
+				ZIndex = 2,
+				BorderSizePixel = 0,
+				BackgroundColor3 = FromRGB(0, 0, 0),
+			})
+
+			Instances:Create("UIGradient", {
+				Parent = Items["Value"].Instance,
+				Name = "\0",
+				Rotation = 90,
+				Transparency = NumSequence({ NumSequenceKeypoint(0, 1), NumSequenceKeypoint(1, 0) }),
+			})
+
+			Items["PaletteDragger"] = Instances:Create("Frame", {
+				Parent = Items["Palette"].Instance,
+				Name = "\0",
+				Size = UDim2New(0, 2, 0, 2),
+				Position = UDim2New(0, 8, 0, 8),
+				BorderColor3 = FromRGB(0, 0, 0),
+				ZIndex = 2,
+				BorderSizePixel = 0,
+				BackgroundColor3 = FromRGB(255, 255, 255),
+			})
+
+			Instances:Create("UIStroke", {
+				Parent = Items["PaletteDragger"].Instance,
+				Name = "\0",
+				Color = FromRGB(46, 52, 61),
+				LineJoinMode = Enum.LineJoinMode.Miter,
+				ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+			}):AddToTheme({ Color = "Border" })
+
+			Items["HexInput"] = Instances:Create("TextBox", {
+				Parent = Items["ColorpickerWindow"].Instance,
+				Name = "\0",
+				FontFace = Library.Font,
+				ClearTextOnFocus = false,
+				TextColor3 = FromRGB(255, 255, 255),
+				BorderColor3 = FromRGB(0, 0, 0),
+				Text = "",
+				AnchorPoint = Vector2New(0, 1),
+				Size = UDim2New(1, -16, 0, 20),
+				PlaceholderColor3 = FromRGB(255, 255, 255),
+				Position = UDim2New(0, 8, 1, -7),
+				BorderSizePixel = 0,
+				TextSize = 14,
+				BackgroundColor3 = FromRGB(32, 38, 48),
+			})
+			Items["HexInput"]:AddToTheme({ TextColor3 = "Text", BackgroundColor3 = "Element" })
+
+			Instances:Create("UIStroke", {
+				Parent = Items["HexInput"].Instance,
+				Name = "\0",
+				Color = FromRGB(46, 52, 61),
+				LineJoinMode = Enum.LineJoinMode.Miter,
+				ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+			}):AddToTheme({ Color = "Border" })
+
+			Items["ColorpickerWindow2"] = Instances:Create("Frame", {
+				Parent = Library.UnusedHolder.Instance,
+				Name = "\0",
+				Position = UDim2New(0, 0, 0, 0),
+				BorderColor3 = FromRGB(0, 0, 0),
+				Size = UDim2New(0, 50, 0, 20),
+				BorderSizePixel = 0,
+				BackgroundColor3 = FromRGB(32, 38, 48),
+				AutomaticSize = Enum.AutomaticSize.Y,
+			})
+			Items["ColorpickerWindow2"]:AddToTheme({ BackgroundColor3 = "Element" })
+
+			Instances:Create("UIStroke", {
+				Parent = Items["ColorpickerWindow2"].Instance,
+				Name = "\0",
+				Color = FromRGB(46, 52, 61),
+				LineJoinMode = Enum.LineJoinMode.Miter,
+				ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+			}):AddToTheme({ Color = "Border" })
+
+			Instances:Create("UIListLayout", {
+				Parent = Items["ColorpickerWindow2"].Instance,
+				Name = "\0",
+				Padding = UDimNew(0, 2),
+				SortOrder = Enum.SortOrder.LayoutOrder,
+			})
+		end
+
+		local AddButton = function(Name, Callback)
+			local NewButton = Instances:Create("TextButton", {
+				Parent = Items["ColorpickerWindow2"].Instance,
+				Name = "\0",
+				FontFace = Library.Font,
+				TextColor3 = FromRGB(255, 255, 255),
+				BorderColor3 = FromRGB(0, 0, 0),
+				Text = Name,
+				AutoButtonColor = false,
+				BackgroundTransparency = 1,
+				Size = UDim2New(1, 0, 0, 20),
+				BorderSizePixel = 0,
+				TextSize = 14,
+				BackgroundColor3 = FromRGB(32, 38, 48),
+			})
+			NewButton:AddToTheme({ TextColor3 = "Text" })
+
+			NewButton:Connect("MouseButton1Down", function()
+				Callback()
+				Colorpicker:SetOpen2(false)
+			end)
+
+			return NewButton
+		end
+
+		AddButton("Copy", function()
+			local Red = MathFloor(Colorpicker.Color.R * 255)
+			local Green = MathFloor(Colorpicker.Color.G * 255)
+			local Blue = MathFloor(Colorpicker.Color.B * 255)
+
+			setclipboard(Red .. ", " .. Green .. ", " .. Blue)
+			Library.CopiedColor = Red .. ", " .. Green .. ", " .. Blue
+		end)
+		AddButton("Paste", function()
+			if Library.CopiedColor then
+				local Red, Green, Blue = Library.CopiedColor:match("(%d+),%s*(%d+),%s*(%d+)")
+				Red, Green, Blue = tonumber(Red), tonumber(Green), tonumber(Blue)
+
+				Colorpicker:Set({ Red, Green, Blue }, Colorpicker.Alpha)
+			end
+		end)
+
+		local SlidingPalette = false
+		local SlidingHue = false
+		local SlidingAlpha = false
+
+		local Debounce = false
+		local RenderStepped
+
+		local RenderStepped2
+
+		function Colorpicker:Get()
+			return Colorpicker.Color, Colorpicker.Alpha
+		end
+
+		function Colorpicker:SetOpen(Bool)
+			if Debounce then
+				return
+			end
+
+			Colorpicker.IsOpen = Bool
+
+			Debounce = true
+
+			if Colorpicker.IsOpen then
+				Items["ColorpickerWindow"].Instance.Visible = true
+				Items["ColorpickerWindow"].Instance.Parent = Library.Holder.Instance
+
+				RenderStepped = RunService.RenderStepped:Connect(function()
+					Items["ColorpickerWindow"].Instance.Position = UDim2New(
+						0,
+						Items["ColorpickerButton"].Instance.AbsolutePosition.X,
+						0,
+						Items["ColorpickerButton"].Instance.AbsolutePosition.Y
+							+ Items["ColorpickerButton"].Instance.AbsoluteSize.Y
+							+ 65
+					)
+				end)
+
+				for Index, Value in Library.OpenFrames do
+					if Value ~= Colorpicker then
+						Value:SetOpen(false)
+					end
+				end
+
+				Library.OpenFrames[Colorpicker] = Colorpicker
+			else
+				if Library.OpenFrames[Colorpicker] then
+					Library.OpenFrames[Colorpicker] = nil
+				end
+
+				if RenderStepped then
+					RenderStepped:Disconnect()
+					RenderStepped = nil
+				end
+			end
+
+			local Descendants = Items["ColorpickerWindow"].Instance:GetDescendants()
+			TableInsert(Descendants, Items["ColorpickerWindow"].Instance)
+
+			local NewTween
+
+			for Index, Value in Descendants do
+				local TransparencyProperty = Tween:GetProperty(Value)
+
+				if not TransparencyProperty then
+					continue
+				end
+
+				if not Value.ClassName:find("UI") then
+					Value.ZIndex = Colorpicker.IsOpen and 104 or 1
+					Items["Glow"].Instance.ZIndex = Colorpicker.IsOpen and 103 or 1
+				end
+
+				if type(TransparencyProperty) == "table" then
+					for _, Property in TransparencyProperty do
+						NewTween = Tween:FadeItem(Value, Property, Bool, Library.FadeSpeed)
+					end
+				else
+					NewTween = Tween:FadeItem(Value, TransparencyProperty, Bool, Library.FadeSpeed)
+				end
+			end
+
+			NewTween.Tween.Completed:Connect(function()
+				Debounce = false
+				Items["ColorpickerWindow"].Instance.Visible = Colorpicker.IsOpen
+				task.wait(0.2)
+				Items["ColorpickerWindow"].Instance.Parent = not Colorpicker.IsOpen
+						and Library.UnusedHolder.Instance
+					or Library.Holder.Instance
+			end)
+		end
+
+		function Colorpicker:SetOpen2(Bool)
+			Colorpicker.IsOpen2 = Bool
+			if Bool then
+				Items["ColorpickerWindow2"].Instance.Visible = true
+				Items["ColorpickerWindow2"].Instance.Parent = Library.Holder.Instance
+
+				RenderStepped2 = RunService.RenderStepped:Connect(function()
+					Items["ColorpickerWindow2"].Instance.Position = UDim2New(
+						0,
+						Items["ColorpickerButton"].Instance.AbsolutePosition.X
+							+ Items["ColorpickerButton"].Instance.AbsoluteSize.X,
+						0,
+						Items["ColorpickerButton"].Instance.AbsolutePosition.Y
+							+ Items["ColorpickerButton"].Instance.AbsoluteSize.Y
+							+ 65
+					)
+				end)
+			else
+				if RenderStepped2 then
+					RenderStepped2:Disconnect()
+					RenderStepped2 = nil
+				end
+
+				Items["ColorpickerWindow2"].Instance.Visible = false
+				Items["ColorpickerWindow2"].Instance.Parent = Library.UnusedHolder.Instance
+			end
+		end
+
+		function Colorpicker:SlidePalette(Input)
+			if not Input or not SlidingPalette then
+				return
+			end
+
+			local ValueX = MathClamp(
+				1
+					- (Input.Position.X - Items["Palette"].Instance.AbsolutePosition.X)
+						/ Items["Palette"].Instance.AbsoluteSize.X,
+				0,
+				1
+			)
+			local ValueY = MathClamp(
+				1
+					- (Input.Position.Y - Items["Palette"].Instance.AbsolutePosition.Y)
+						/ Items["Palette"].Instance.AbsoluteSize.Y,
+				0,
+				1
+			)
+
+			Colorpicker.Saturation = ValueX
+			Colorpicker.Value = ValueY
+
+			local SlideX = MathClamp(
+				(Input.Position.X - Items["Palette"].Instance.AbsolutePosition.X)
+					/ Items["Palette"].Instance.AbsoluteSize.X,
+				0,
+				0.99
+			)
+			local SlideY = MathClamp(
+				(Input.Position.Y - Items["Palette"].Instance.AbsolutePosition.Y)
+					/ Items["Palette"].Instance.AbsoluteSize.Y,
+				0,
+				0.99
+			)
+
+			Items["PaletteDragger"]:Tween(
+				TweenInfo.new(Library.Tween.Time, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
+				{ Position = UDim2New(SlideX, 0, SlideY, 0) }
+			)
+			Colorpicker:Update()
+		end
+
+		function Colorpicker:SlideHue(Input)
+			if not Input or not SlidingHue then
+				return
+			end
+
+			local ValueY = MathClamp(
+				(Input.Position.Y - Items["Hue"].Instance.AbsolutePosition.Y) / Items["Hue"].Instance.AbsoluteSize.Y,
+				0,
+				1
+			)
+
+			Colorpicker.Hue = ValueY
+
+			local SlideY = MathClamp(
+				(Input.Position.Y - Items["Hue"].Instance.AbsolutePosition.Y) / Items["Hue"].Instance.AbsoluteSize.Y,
+				0,
+				0.99
+			)
+
+			Items["HueDragger"]:Tween(
+				TweenInfo.new(Library.Tween.Time, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
+				{ Position = UDim2New(0, 0, SlideY, 0) }
+			)
+			Colorpicker:Update()
+		end
+
+		function Colorpicker:SlideAlpha(Input)
+			if not Input or not SlidingAlpha then
+				return
+			end
+
+			local ValueX = MathClamp(
+				(Input.Position.X - Items["Alpha"].Instance.AbsolutePosition.X)
+					/ Items["Alpha"].Instance.AbsoluteSize.X,
+				0,
+				1
+			)
+
+			Colorpicker.Alpha = ValueX
+
+			local SlideX = MathClamp(
+				(Input.Position.X - Items["Alpha"].Instance.AbsolutePosition.X)
+					/ Items["Alpha"].Instance.AbsoluteSize.X,
+				0,
+				0.99
+			)
+
+			Items["AlphaDragger"]:Tween(
+				TweenInfo.new(Library.Tween.Time, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
+				{ Position = UDim2New(SlideX, 0, 0, 0) }
+			)
+			Colorpicker:Update(true)
+		end
+
+		function Colorpicker:Update(IsFromAlpha)
+			local Hue, Saturation, Value = Colorpicker.Hue, Colorpicker.Saturation, Colorpicker.Value
+			Colorpicker.Color = FromHSV(Hue, Saturation, Value)
+			Colorpicker.HexValue = Colorpicker.Color:ToHex()
+
+			Library.Flags[Colorpicker.Flag] = {
+				Alpha = Colorpicker.Alpha,
+				Color = Colorpicker.Color,
+				HexValue = Colorpicker.HexValue,
+			}
+
+			Items["ColorpickerButton"]:Tween(nil, { BackgroundColor3 = Colorpicker.Color })
+			Items["Palette"]:Tween(nil, { BackgroundColor3 = FromHSV(Hue, 1, 1) })
+			Items["HexInput"].Instance.Text = "#" .. Colorpicker.HexValue
+
+			if not IsFromAlpha then
+				Items["Alpha"]:Tween(nil, { BackgroundColor3 = Colorpicker.Color })
+			end
+
+			if Data.Callback then
+				Library:SafeCall(Data.Callback, Colorpicker.Color, Colorpicker.Alpha)
+			end
+		end
+
+		function Colorpicker:Set(Color, Alpha)
+			if type(Color) == "table" then
+				Color = FromRGB(Color[1], Color[2], Color[3])
+			elseif type(Color) == "string" then
+				Color = FromHex(Color)
+			end
+
+			Colorpicker.Hue, Colorpicker.Saturation, Colorpicker.Value = Color:ToHSV()
+			Colorpicker.Alpha = Alpha or 0
+
+			local PaletteValueX = MathClamp(1 - Colorpicker.Saturation, 0, 0.99)
+			local PaletteValueY = MathClamp(1 - Colorpicker.Value, 0, 0.99)
+
+			local AlphaPositionX = MathClamp(Colorpicker.Alpha, 0, 0.99)
+
+			local HuePositionY = MathClamp(Colorpicker.Hue, 0, 0.99)
+
+			Items["PaletteDragger"]:Tween(
+				TweenInfo.new(Library.Tween.Time, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
+				{ Position = UDim2New(PaletteValueX, 0, PaletteValueY, 0) }
+			)
+			Items["HueDragger"]:Tween(
+				TweenInfo.new(Library.Tween.Time, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
+				{ Position = UDim2New(0, 0, HuePositionY, 0) }
+			)
+			Items["AlphaDragger"]:Tween(
+				TweenInfo.new(Library.Tween.Time, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
+				{ Position = UDim2New(AlphaPositionX, 0, 0, 0) }
+			)
+			Colorpicker:Update(false)
+		end
+
+		local PaletteChanged
+
+		Items["Palette"]:Connect("InputBegan", function(Input)
+			if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
+				SlidingPalette = true
+				Colorpicker:SlidePalette(Input)
+
+				if PaletteChanged then 
+					return 
+				end
+
+				PaletteChanged = Input.Changed:Connect(function()
+					if Input.UserInputState == Enum.UserInputState.End then
+						SlidingPalette = false
+
+						PaletteChanged:Disconnect()
+						PaletteChanged = nil
+					end
+				end)
+			end
+		end)
+
+		local HueChanged
+
+		Items["HueInline"]:Connect("InputBegan", function(Input)
+			if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
+				SlidingHue = true
+				Colorpicker:SlideHue(Input)
+
+				if HueChanged then 
+					return 
+				end
+
+				HueChanged = Input.Changed:Connect(function()
+					if Input.UserInputState == Enum.UserInputState.End then
+						SlidingHue = false
+
+						HueChanged:Disconnect()
+						HueChanged = nil
+					end
+				end)
+			end
+		end)
+
+		local AlphaChanged
+
+		Items["Alpha"]:Connect("InputBegan", function(Input)
+			if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
+				SlidingAlpha = true
+				Colorpicker:SlideAlpha(Input)
+
+				if AlphaChanged then 
+					return
+				end
+
+				AlphaChanged = Input.Changed:Connect(function()
+					if Input.UserInputState == Enum.UserInputState.End then
+						SlidingAlpha = false
+
+						AlphaChanged:Disconnect()
+						AlphaChanged = nil
+					end
+				end)
+			end
+		end)
+
+		Items["HexInput"]:Connect("FocusLost", function()
+			Colorpicker:Set(tostring(Items["HexInput"].Instance.Text), Colorpicker.Alpha)
+		end)
+
+		local CompareVectors = function(PointA, PointB)
+			return (PointA.X < PointB.X) or (PointA.Y < PointB.Y)
+		end
+
+		local IsClipped = function(Object, Column)
+			local Parent = Column
+
+			local BoundryTop = Parent.AbsolutePosition
+			local BoundryBottom = BoundryTop + Parent.AbsoluteSize
+
+			local Top = Object.AbsolutePosition
+			local Bottom = Top + Object.AbsoluteSize
+
+			return CompareVectors(Top, BoundryTop) or CompareVectors(BoundryBottom, Bottom)
+		end
+
+		Items["ColorpickerButton"]:Connect("Changed", function(Property)
+			if Property == "AbsolutePosition" and Colorpicker.IsOpen then
+				Colorpicker.IsOpen = not IsClipped(
+					Items["ColorpickerWindow"].Instance,
+					Data.Section.Items["Section"].Instance.Parent
+				)
+				Items["ColorpickerWindow"].Instance.Visible = Colorpicker.IsOpen
+			end
+		end)
+
+		Library:Connect(UserInputService.InputChanged, function(Input)
+			if Input.UserInputType == Enum.UserInputType.MouseMovement or Input.UserInputType == Enum.UserInputType.Touch then
+				if SlidingPalette then
+					Colorpicker:SlidePalette(Input)
+				elseif SlidingHue then
+					Colorpicker:SlideHue(Input)
+				elseif SlidingAlpha then
+					Colorpicker:SlideAlpha(Input)
+				end
+			end
+		end)
+
+		Library:Connect(UserInputService.InputBegan, function(Input)
+			if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
+				if not Colorpicker.IsOpen then
+					return
+				end
+
+				if
+					Library:IsMouseOverFrame(Items["ColorpickerWindow"])
+					or Library:IsMouseOverFrame(Items["ColorpickerWindow2"])
+				then
+					return
+				end
+
+				Colorpicker:SetOpen(false)
+				Colorpicker:SetOpen2(false)
+			end
+		end)
+
+		Items["ColorpickerButton"]:Connect("MouseButton1Down", function()
+			Colorpicker:SetOpen(not Colorpicker.IsOpen)
+		end)
+
+		Items["ColorpickerButton"]:Connect("MouseButton2Down", function()
+			Colorpicker:SetOpen2(not Colorpicker.IsOpen2)
+		end)
+
+		if Data.Default then
+			Colorpicker:Set(Data.Default, Data.Alpha)
+		end
+
+		Library.SetFlags[Colorpicker.Flag] = function(Color, Alpha)
+			Colorpicker:Set(Color, Alpha)
+		end
+
+		return Colorpicker, Items
+	end
+
 	Library.CreateKeybind = function(self, Data)
 		local Keybind = {
 			IsOpen = false,
@@ -3339,6 +4158,34 @@ do
 				return NewKeybind
 			end
 
+			function Toggle:Colorpicker(Data)
+				Data = Data or {}
+
+				local Colorpicker = {
+					Window = Toggle.Window,
+					Page = Toggle.Page,
+					Section = Toggle.Section,
+
+					Name = Data.Name or Data.name or "Colorpicker",
+					Flag = Data.Flag or Data.flag or Library:NextFlag(),
+					Default = Data.Default or Data.default or FromRGB(255, 255, 255),
+					Alpha = Data.Alpha or Data.alpha or 1,
+					Callback = Data.Callback or Data.callback or function() end,
+				}
+
+				local NewColorpicker, Items = Library:CreateColorpicker({
+					Name = Colorpicker.Name,
+					Parent = Items["SubElements"],
+					Flag = Colorpicker.Flag,
+					Section = Colorpicker.Section,
+					Default = Colorpicker.Default,
+					Alpha = Colorpicker.Alpha,
+					Callback = Colorpicker.Callback,
+				})
+
+				return NewColorpicker
+			end
+
 			return Toggle
 		end
 
@@ -3504,6 +4351,34 @@ do
 				})
 
 				return NewKeybind
+			end
+
+			function Label:Colorpicker(Data)
+				Data = Data or {}
+
+				local Colorpicker = {
+					Window = Label.Window,
+					Page = Label.Page,
+					Section = Label.Section,
+
+					Name = Data.Name or Data.name or "Colorpicker",
+					Flag = Data.Flag or Data.flag or Library:NextFlag(),
+					Default = Data.Default or Data.default or FromRGB(255, 255, 255),
+					Alpha = Data.Alpha or Data.alpha or 1,
+					Callback = Data.Callback or Data.callback or function() end,
+				}
+
+				local NewColorpicker, Items = Library:CreateColorpicker({
+					Name = Colorpicker.Name,
+					Parent = Items["SubElements"],
+					Flag = Colorpicker.Flag,
+					Section = Colorpicker.Section,
+					Default = Colorpicker.Default,
+					Alpha = Colorpicker.Alpha,
+					Callback = Colorpicker.Callback,
+				})
+
+				return NewColorpicker
 			end
 
 			return Label
@@ -4082,7 +4957,19 @@ do
 				Library:RefreshConfigsList(ConfigsSearchbox)
 			end
 
-			Library:RefreshConfigsList(ConfigsSearchbox)
+			local ThemingSection = SettingsPage:Section({ Name = "Theming", Side = 2 })
+			do
+				for Index, Value in Library.Theme do
+					ThemingSection:Label(Index):Colorpicker({
+						Flag = Index,
+						Default = Value,
+						Callback = function(Value)
+							Library.Theme[Index] = Value
+							Library:ChangeTheme(Index, Value)
+						end,
+					})
+				end
+			end
 		end
 	end
 end
